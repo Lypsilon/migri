@@ -7,32 +7,109 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { text-align: center; }
-    form { max-width: 400px; margin: auto; display: flex; flex-direction: column; gap: 10px; }
-    label { font-weight: bold; }
-    input, select, textarea, button { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
-    button { background-color: #4CAF50; color: white; cursor: pointer; }
+    .page { display: none; max-width: 500px; margin: auto; }
+    .active { display: block; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, select, textarea, button { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-top: 5px; }
+    button { background-color: #4CAF50; color: white; cursor: pointer; margin-top: 15px; }
     button:hover { background-color: #45a049; }
   </style>
 </head>
 <body>
   <h1>Headache Tracker</h1>
-  <form id="trackerForm">
-    <label for="date">Date:</label>
+
+  <!-- Page 1: General Info -->
+  <form id="page1" class="page active">
+    <label>Date:</label>
     <input type="date" id="date" required>
 
-    <label for="severity">Severity (1-10):</label>
+    <label>Intensity (1-10):</label>
     <input type="number" id="severity" min="1" max="10" required>
 
-    <label for="duration">Duration (hours):</label>
-    <input type="number" id="duration" min="0" step="0.5" required>
+    <button type="button" onclick="nextPage(2)">Next</button>
+  </form>
 
-    <label for="triggers">Possible Triggers:</label>
+  <!-- Page 2: Medications -->
+  <form id="page2" class="page">
+    <label>Medication (Prevention):</label>
+    <textarea id="medication_prevention"></textarea>
+
+    <label>Medication (SOS):</label>
+    <textarea id="medication_sos"></textarea>
+
+    <label>Significant relief after 2h?</label>
+    <select id="relief">
+      <option value="">--Select--</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <button type="button" onclick="prevPage(1)">Back</button>
+    <button type="button" onclick="nextPage(3)">Next</button>
+  </form>
+
+  <!-- Page 3: Menstruation & Aura -->
+  <form id="page3" class="page">
+    <label>Menstruation?</label>
+    <select id="menstruation">
+      <option value="">--Select--</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <label>Aura?</label>
+    <select id="aura">
+      <option value="">--Select--</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <button type="button" onclick="prevPage(2)">Back</button>
+    <button type="button" onclick="nextPage(4)">Next</button>
+  </form>
+
+  <!-- Page 4: Symptoms -->
+  <form id="page4" class="page">
+    <label>Symptoms (check all that apply):</label>
+    <input type="checkbox" value="Nausea" class="symptom"> Nausea<br>
+    <input type="checkbox" value="Vomiting" class="symptom"> Vomiting<br>
+    <input type="checkbox" value="Photophobia" class="symptom"> Intolerance to light<br>
+    <input type="checkbox" value="Phonophobia" class="symptom"> Intolerance to sound<br>
+    <input type="checkbox" value="Osmophobia" class="symptom"> Intolerance to smells<br>
+    <input type="checkbox" value="Movement worsens pain" class="symptom"> Worsening with movement<br>
+
+    <label>Side of pain:</label>
+    <select id="side">
+      <option value="">--Select--</option>
+      <option>Right</option>
+      <option>Left</option>
+      <option>Whole head</option>
+      <option>Front</option>
+    </select>
+
+    <label>Type of pain:</label>
+    <select id="pain_type">
+      <option value="">--Select--</option>
+      <option>Throbbing</option>
+      <option>Pressure</option>
+      <option>Weight</option>
+      <option>Other</option>
+    </select>
+
+    <button type="button" onclick="prevPage(3)">Back</button>
+    <button type="button" onclick="nextPage(5)">Next</button>
+  </form>
+
+  <!-- Page 5: Triggers & Food -->
+  <form id="page5" class="page">
+    <label>Possible Triggers:</label>
     <textarea id="triggers"></textarea>
 
-    <label for="medication">Medication Taken:</label>
-    <textarea id="medication"></textarea>
+    <label>Food eaten:</label>
+    <textarea id="food"></textarea>
 
-    <button type="submit">Save Entry</button>
+    <button type="button" onclick="prevPage(4)">Back</button>
+    <button type="button" onclick="saveEntry()">Save Entry</button>
   </form>
 
   <div style="text-align:center; margin-top:20px;">
@@ -41,30 +118,74 @@
 
   <script>
     let entries = JSON.parse(localStorage.getItem("headacheEntries")) || [];
+    let startDate = localStorage.getItem("startDate");
 
-    document.getElementById("trackerForm").addEventListener("submit", function(event) {
-      event.preventDefault();
+    // set default date to today
+    document.getElementById("date").valueAsDate = new Date();
+
+    if (!startDate) {
+      startDate = document.getElementById("date").value;
+      localStorage.setItem("startDate", startDate);
+    }
+
+    function nextPage(n) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page' + n).classList.add('active');
+    }
+
+    function prevPage(n) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page' + n).classList.add('active');
+    }
+
+    function saveEntry() {
+      const symptoms = Array.from(document.querySelectorAll('.symptom:checked')).map(cb => cb.value);
       const entry = {
         date: document.getElementById("date").value,
         severity: document.getElementById("severity").value,
-        duration: document.getElementById("duration").value,
+        medication_prevention: document.getElementById("medication_prevention").value,
+        medication_sos: document.getElementById("medication_sos").value,
+        relief: document.getElementById("relief").value,
+        menstruation: document.getElementById("menstruation").value,
+        aura: document.getElementById("aura").value,
+        symptoms: symptoms.join(", "),
+        side: document.getElementById("side").value,
+        pain_type: document.getElementById("pain_type").value,
         triggers: document.getElementById("triggers").value,
-        medication: document.getElementById("medication").value
+        food: document.getElementById("food").value
       };
+
+      // check missing dates since start
+      const existingDates = entries.map(e => e.date);
+      const today = new Date(entry.date);
+      let missing = [];
+      for (let d = new Date(startDate); d < today; d.setDate(d.getDate() + 1)) {
+        let dStr = d.toISOString().split('T')[0];
+        if (!existingDates.includes(dStr) && dStr !== entry.date) {
+          missing.push(dStr);
+        }
+      }
+      if (missing.length > 0) {
+        alert("Warning: Missing entries for dates: " + missing.join(", "));
+      }
+
       entries.push(entry);
       localStorage.setItem("headacheEntries", JSON.stringify(entries));
       alert("Entry saved!");
-      document.getElementById("trackerForm").reset();
-    });
+
+      // reset to first page for next entry
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page1').classList.add('active');
+    }
 
     function downloadCSV() {
       if (entries.length === 0) {
         alert("No entries to download.");
         return;
       }
-      let csv = "Date,Severity,Duration,Triggers,Medication\n";
+      let csv = "Date,Severity,Medication Prevention,Medication SOS,Relief,Menstruation,Aura,Symptoms,Side,Pain Type,Triggers,Food\n";
       entries.forEach(entry => {
-        csv += `${entry.date},${entry.severity},${entry.duration},"${entry.triggers}","${entry.medication}"\n`;
+        csv += `${entry.date},${entry.severity},"${entry.medication_prevention}","${entry.medication_sos}",${entry.relief},${entry.menstruation},${entry.aura},"${entry.symptoms}",${entry.side},${entry.pain_type},"${entry.triggers}","${entry.food}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv' });
