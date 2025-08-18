@@ -13,13 +13,13 @@
     input, select, textarea, button { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-top: 5px; }
     button { background-color: #4CAF50; color: white; cursor: pointer; margin-top: 15px; }
     button:hover { background-color: #45a049; }
-    #downloadCSV { display: none; }
   </style>
+  <script src="https://accounts.google.com/gsi/client"></script>
 </head>
 <body>
   <h1>Headache Tracker</h1>
 
-  <!-- Page 1: General Info -->
+  <!-- Page 1 -->
   <form id="page1" class="page active">
     <label>Date:</label>
     <input type="date" id="date" required>
@@ -30,7 +30,7 @@
     <button type="button" onclick="nextPage(2)">Next</button>
   </form>
 
-  <!-- Page 2: Medications -->
+  <!-- Page 2 -->
   <form id="page2" class="page">
     <label>Medication (Prevention):</label>
     <textarea id="medication_prevention"></textarea>
@@ -49,7 +49,7 @@
     <button type="button" onclick="nextPage(3)">Next</button>
   </form>
 
-  <!-- Page 3: Menstruation & Aura -->
+  <!-- Page 3 -->
   <form id="page3" class="page">
     <label>Menstruation?</label>
     <select id="menstruation">
@@ -69,7 +69,7 @@
     <button type="button" onclick="nextPage(4)">Next</button>
   </form>
 
-  <!-- Page 4: Symptoms -->
+  <!-- Page 4 -->
   <form id="page4" class="page">
     <label>Symptoms (check all that apply):</label>
     <input type="checkbox" value="Nausea" class="symptom"> Nausea<br>
@@ -101,7 +101,7 @@
     <button type="button" onclick="nextPage(5)">Next</button>
   </form>
 
-  <!-- Page 5: Triggers & Food -->
+  <!-- Page 5 -->
   <form id="page5" class="page">
     <label>Possible Triggers:</label>
     <textarea id="triggers"></textarea>
@@ -110,19 +110,15 @@
     <textarea id="food"></textarea>
 
     <button type="button" onclick="prevPage(4)">Back</button>
-    <button type="button" onclick="saveEntry()">Save Entry</button>
+    <button type="button" onclick="submitEntry()">Submit Entry</button>
+
+    <div id="downloadDiv" style="display:none; margin-top:15px;">
+      <button type="button" onclick="downloadCSV()">Download CSV of this entry</button>
+    </div>
   </form>
 
-  <!-- Page 6: Download CSV -->
-  <div id="page6" class="page">
-    <p>Entry saved! You can download your entry below:</p>
-    <button id="downloadCSV">Download CSV</button>
-  </div>
-
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxLPhlAw7tztBJSlG55-tZPuPmIw3HAJSVKml6X8Ng-0ZbyV2Rt4fi4uwo96Eoy-yCoqA/exec"; // replace with your deployed Apps Script URL
-    let lastEntry = {};
-
+    // default date
     document.getElementById("date").valueAsDate = new Date();
 
     function nextPage(n) {
@@ -135,9 +131,9 @@
       document.getElementById('page' + n).classList.add('active');
     }
 
-    function saveEntry() {
+    function gatherEntry() {
       const symptoms = Array.from(document.querySelectorAll('.symptom:checked')).map(cb => cb.value);
-      const entry = {
+      return {
         date: document.getElementById("date").value,
         severity: document.getElementById("severity").value,
         medication_prevention: document.getElementById("medication_prevention").value,
@@ -151,35 +147,54 @@
         triggers: document.getElementById("triggers").value,
         food: document.getElementById("food").value
       };
-
-      fetch(WEB_APP_URL, {
-        method: "POST",
-        body: JSON.stringify(entry)
-      })
-      .then(response => response.text())
-      .then(text => {
-        alert("Entry saved to Google Sheet!");
-        lastEntry = entry;
-        nextPage(6);
-        document.getElementById("downloadCSV").style.display = "block";
-      })
-      .catch(err => alert("Error: " + err));
     }
 
-    document.getElementById("downloadCSV").addEventListener("click", () => {
-      const e = lastEntry;
+    let lastEntry = null;
+
+    function submitEntry() {
+      lastEntry = gatherEntry();
+      sendEntry(lastEntry);
+    }
+
+    async function sendEntry(entry) {
+      const tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: "YOUR_CLIENT_ID.apps.googleusercontent.com",
+        scope: "https://www.googleapis.com/auth/script.external_request",
+        callback: (tokenResponse) => {
+          fetch("YOUR_WEB_APP_URL", {
+            method: "POST",
+            headers: {
+              "Authorization": "Bearer " + tokenResponse.access_token,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(entry)
+          })
+          .then(res => res.text())
+          .then(msg => {
+            alert("Entry sent to Google Sheets: " + msg);
+            document.getElementById("downloadDiv").style.display = "block";
+          })
+          .catch(err => alert("Error: " + err));
+        },
+      });
+      tokenClient.requestAccessToken();
+    }
+
+    function downloadCSV() {
+      if (!lastEntry) return;
       let csv = "Date,Severity,Medication Prevention,Medication SOS,Relief,Menstruation,Aura,Symptoms,Side,Pain Type,Triggers,Food\n";
-      csv += `"${e.date}",${e.severity},"${e.medication_prevention}","${e.medication_sos}",${e.relief},${e.menstruation},${e.aura},"${e.symptoms}",${e.side},${e.pain_type},"${e.triggers}","${e.food}"\n`;
+      const e = lastEntry;
+      csv += `${e.date},${e.severity},"${e.medication_prevention}","${e.medication_sos}",${e.relief},${e.menstruation},${e.aura},"${e.symptoms}",${e.side},${e.pain_type},"${e.triggers}","${e.food}"\n`;
 
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "headache_entry.csv";
+      a.download = `headache_entry_${e.date}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    });
+    }
   </script>
 </body>
 </html>
