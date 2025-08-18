@@ -169,6 +169,19 @@
       };
     }
 
+    function clearForm() {
+      document.querySelectorAll("input, textarea, select").forEach(el => {
+        if (el.type === "checkbox" || el.type === "radio") {
+          el.checked = false;
+        } else if (el.type === "date") {
+          el.valueAsDate = new Date();
+        } else {
+          el.value = "";
+        }
+      });
+      nextPage(1); // reset back to page 1
+    }
+
     let lastEntry = null;
 
     function submitEntry() {
@@ -178,7 +191,7 @@
 
     async function sendEntry(entry) {
       const tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: "YOUR_CLIENT_ID.apps.googleusercontent.com",
+        client_id: "YOUR_CLIENT_ID.apps.googleusercontent.com", // <-- replace with your actual OAuth client ID
         scope: "https://www.googleapis.com/auth/script.external_request",
         callback: (tokenResponse) => {
           fetch("https://script.google.com/macros/s/AKfycbwLRT25ySXoBIS0tGeK1-oh0dVOB27qo_XcrRFSJVV0-W2ghVBAnP3iAnjX3ko8BXFOyg/exec", {
@@ -193,6 +206,7 @@
           .then(msg => {
             alert("Entry sent to Google Sheets: " + msg);
             document.getElementById("downloadDiv").style.display = "block";
+            clearForm();
           })
           .catch(err => alert("Error: " + err));
         },
@@ -204,7 +218,7 @@
       if (!lastEntry) return;
       const e = lastEntry;
       let csv = "Date,Severity,Med Prevention,Med SOS,Relief,Menstruation,Aura,Nausea,Vomiting,Photophobia,Phonophobia,Osmophobia,Movement,Side,Pain Type,Triggers,Breakfast,Lunch,Dinner,Snacks\n";
-      csv += `"${e.date}",${e.severity},"${e.medication_prevention}","${e.medication_sos}",${e.relief},${e.menstruation},${e.aura},${e.symptom_nausea},${e.symptom_vomiting},${e.symptom_photophobia},${e.symptom_phonophobia},${e.symptom_osmophobia},${e.symptom_movement},${e.side},${e.pain_type},"${e.triggers}","${e.food_breakfast}","${e.food_lunch}","${e.food_dinner}","${e.food_snacks}"\n`;
+      csv += `"${e.date}",${e.severity},"${e.medication_prevention}","${e.medication_sos}",${e.relief},${e.menstruation},${e.aura},${e.symptom_nausea},${e.symptom_vomiting},${e.symptom_photophobia},${e.symptom_phonophobia},${e.symptom_osmophobia},${e.symptom_movement},${e.pain_side},${e.pain_type},"${e.triggers}","${e.food_breakfast}","${e.food_lunch}","${e.food_dinner}","${e.food_snacks}"\n`;
 
       const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
