@@ -181,7 +181,7 @@
         client_id: "YOUR_CLIENT_ID.apps.googleusercontent.com",
         scope: "https://www.googleapis.com/auth/script.external_request",
         callback: (tokenResponse) => {
-          fetch("YOUR_WEB_APP_URL", {
+          fetch("https://script.google.com/macros/s/AKfycbwLRT25ySXoBIS0tGeK1-oh0dVOB27qo_XcrRFSJVV0-W2ghVBAnP3iAnjX3ko8BXFOyg/exec", {
             method: "POST",
             headers: {
               "Authorization": "Bearer " + tokenResponse.access_token,
