@@ -13,6 +13,7 @@
     input, select, textarea, button { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-top: 5px; }
     button { background-color: #4CAF50; color: white; cursor: pointer; margin-top: 15px; }
     button:hover { background-color: #45a049; }
+    #downloadCSV { display: none; }
   </style>
 </head>
 <body>
@@ -110,23 +111,19 @@
 
     <button type="button" onclick="prevPage(4)">Back</button>
     <button type="button" onclick="saveEntry()">Save Entry</button>
-
-    <!-- Download button visible only on last page -->
-    <div id="downloadDiv" style="text-align:center; margin-top:20px; display:none;">
-      <button type="button" onclick="downloadCSV()">Download CSV</button>
-    </div>
   </form>
 
+  <!-- Page 6: Download CSV -->
+  <div id="page6" class="page">
+    <p>Entry saved! You can download your entry below:</p>
+    <button id="downloadCSV">Download CSV</button>
+  </div>
+
   <script>
-    let entries = JSON.parse(localStorage.getItem("headacheEntries")) || [];
-    let startDate = localStorage.getItem("startDate");
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxLPhlAw7tztBJSlG55-tZPuPmIw3HAJSVKml6X8Ng-0ZbyV2Rt4fi4uwo96Eoy-yCoqA/exec"; // replace with your deployed Apps Script URL
+    let lastEntry = {};
 
     document.getElementById("date").valueAsDate = new Date();
-
-    if (!startDate) {
-      startDate = document.getElementById("date").value;
-      localStorage.setItem("startDate", startDate);
-    }
 
     function nextPage(n) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -155,60 +152,34 @@
         food: document.getElementById("food").value
       };
 
-      // Check missing dates since start
-      const existingDates = entries.map(e => e.date);
-      const today = new Date(entry.date);
-      let missing = [];
-      for (let d = new Date(startDate); d < today; d.setDate(d.getDate() + 1)) {
-        let dStr = d.toISOString().split('T')[0];
-        if (!existingDates.includes(dStr) && dStr !== entry.date) {
-          missing.push(dStr);
-        }
-      }
-      if (missing.length > 0) {
-        alert("Warning: Missing entries for dates: " + missing.join(", "));
-      }
-
-      entries.push(entry);
-      localStorage.setItem("headacheEntries", JSON.stringify(entries));
-
-      // Show download button
-      document.getElementById('downloadDiv').style.display = 'block';
-
-      // Send entry to Google Sheets
-      fetch("YOUR_GOOGLE_SCRIPT_WEB_APP_URL", {
+      fetch(WEB_APP_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(entry)
       })
       .then(response => response.text())
-      .then(data => console.log("Sent to Google Sheets:", data))
-      .catch(err => console.error("Error sending to Google Sheets:", err));
-
-      alert("Entry saved!");
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page1').classList.add('active');
+      .then(text => {
+        alert("Entry saved to Google Sheet!");
+        lastEntry = entry;
+        nextPage(6);
+        document.getElementById("downloadCSV").style.display = "block";
+      })
+      .catch(err => alert("Error: " + err));
     }
 
-    function downloadCSV() {
-      if (entries.length === 0) {
-        alert("No entries to download.");
-        return;
-      }
+    document.getElementById("downloadCSV").addEventListener("click", () => {
+      const e = lastEntry;
       let csv = "Date,Severity,Medication Prevention,Medication SOS,Relief,Menstruation,Aura,Symptoms,Side,Pain Type,Triggers,Food\n";
-      entries.forEach(entry => {
-        csv += `${entry.date},${entry.severity},"${entry.medication_prevention}","${entry.medication_sos}",${entry.relief},${entry.menstruation},${entry.aura},"${entry.symptoms}",${entry.side},${entry.pain_type},"${entry.triggers}","${entry.food}"\n`;
-      });
+      csv += `"${e.date}",${e.severity},"${e.medication_prevention}","${e.medication_sos}",${e.relief},${e.menstruation},${e.aura},"${e.symptoms}",${e.side},${e.pain_type},"${e.triggers}","${e.food}"\n`;
 
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "headache_log.csv";
+      a.download = "headache_entry.csv";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    }
+    });
   </script>
 </body>
 </html>
