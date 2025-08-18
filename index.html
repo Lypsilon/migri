@@ -110,17 +110,17 @@
 
     <button type="button" onclick="prevPage(4)">Back</button>
     <button type="button" onclick="saveEntry()">Save Entry</button>
-  </form>
 
-  <div style="text-align:center; margin-top:20px;">
-    <button onclick="downloadCSV()">Download CSV</button>
-  </div>
+    <!-- Download button visible only on last page -->
+    <div id="downloadDiv" style="text-align:center; margin-top:20px; display:none;">
+      <button type="button" onclick="downloadCSV()">Download CSV</button>
+    </div>
+  </form>
 
   <script>
     let entries = JSON.parse(localStorage.getItem("headacheEntries")) || [];
     let startDate = localStorage.getItem("startDate");
 
-    // set default date to today
     document.getElementById("date").valueAsDate = new Date();
 
     if (!startDate) {
@@ -155,7 +155,7 @@
         food: document.getElementById("food").value
       };
 
-      // check missing dates since start
+      // Check missing dates since start
       const existingDates = entries.map(e => e.date);
       const today = new Date(entry.date);
       let missing = [];
@@ -171,9 +171,21 @@
 
       entries.push(entry);
       localStorage.setItem("headacheEntries", JSON.stringify(entries));
-      alert("Entry saved!");
 
-      // reset to first page for next entry
+      // Show download button
+      document.getElementById('downloadDiv').style.display = 'block';
+
+      // Send entry to Google Sheets
+      fetch("YOUR_GOOGLE_SCRIPT_WEB_APP_URL", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry)
+      })
+      .then(response => response.text())
+      .then(data => console.log("Sent to Google Sheets:", data))
+      .catch(err => console.error("Error sending to Google Sheets:", err));
+
+      alert("Entry saved!");
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page1').classList.add('active');
     }
