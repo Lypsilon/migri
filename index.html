@@ -13,6 +13,8 @@
     input, select, textarea, button { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-top: 5px; }
     button { background-color: #4CAF50; color: white; cursor: pointer; margin-top: 15px; }
     button:hover { background-color: #45a049; }
+    .checkbox-group label { font-weight: normal; display: flex; align-items: center; margin-top: 5px; }
+    .checkbox-group input { width: auto; margin-right: 8px; }
   </style>
   <script src="https://accounts.google.com/gsi/client"></script>
 </head>
@@ -72,15 +74,17 @@
   <!-- Page 4 -->
   <form id="page4" class="page">
     <label>Symptoms (check all that apply):</label>
-    <input type="checkbox" value="Nausea" class="symptom"> Nausea<br>
-    <input type="checkbox" value="Vomiting" class="symptom"> Vomiting<br>
-    <input type="checkbox" value="Photophobia" class="symptom"> Intolerance to light<br>
-    <input type="checkbox" value="Phonophobia" class="symptom"> Intolerance to sound<br>
-    <input type="checkbox" value="Osmophobia" class="symptom"> Intolerance to smells<br>
-    <input type="checkbox" value="Movement worsens pain" class="symptom"> Worsening with movement<br>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="symptom_nausea"> Nausea</label>
+      <label><input type="checkbox" id="symptom_vomiting"> Vomiting</label>
+      <label><input type="checkbox" id="symptom_photophobia"> Intolerance to light</label>
+      <label><input type="checkbox" id="symptom_phonophobia"> Intolerance to sound</label>
+      <label><input type="checkbox" id="symptom_osmophobia"> Intolerance to smells</label>
+      <label><input type="checkbox" id="symptom_movement"> Worsening with movement</label>
+    </div>
 
     <label>Side of pain:</label>
-    <select id="side">
+    <select id="pain_side">
       <option value="">--Select--</option>
       <option>Right</option>
       <option>Left</option>
@@ -106,8 +110,17 @@
     <label>Possible Triggers:</label>
     <textarea id="triggers"></textarea>
 
-    <label>Food eaten:</label>
-    <textarea id="food"></textarea>
+    <label>Breakfast:</label>
+    <textarea id="food_breakfast"></textarea>
+
+    <label>Lunch:</label>
+    <textarea id="food_lunch"></textarea>
+
+    <label>Dinner:</label>
+    <textarea id="food_dinner"></textarea>
+
+    <label>Snacks:</label>
+    <textarea id="food_snacks"></textarea>
 
     <button type="button" onclick="prevPage(4)">Back</button>
     <button type="button" onclick="submitEntry()">Submit Entry</button>
@@ -132,7 +145,6 @@
     }
 
     function gatherEntry() {
-      const symptoms = Array.from(document.querySelectorAll('.symptom:checked')).map(cb => cb.value);
       return {
         date: document.getElementById("date").value,
         severity: document.getElementById("severity").value,
@@ -141,11 +153,19 @@
         relief: document.getElementById("relief").value,
         menstruation: document.getElementById("menstruation").value,
         aura: document.getElementById("aura").value,
-        symptoms: symptoms.join(", "),
-        side: document.getElementById("side").value,
+        symptom_nausea: document.getElementById("symptom_nausea").checked ? "Yes" : "No",
+        symptom_vomiting: document.getElementById("symptom_vomiting").checked ? "Yes" : "No",
+        symptom_photophobia: document.getElementById("symptom_photophobia").checked ? "Yes" : "No",
+        symptom_phonophobia: document.getElementById("symptom_phonophobia").checked ? "Yes" : "No",
+        symptom_osmophobia: document.getElementById("symptom_osmophobia").checked ? "Yes" : "No",
+        symptom_movement: document.getElementById("symptom_movement").checked ? "Yes" : "No",
+        pain_side: document.getElementById("pain_side").value,
         pain_type: document.getElementById("pain_type").value,
         triggers: document.getElementById("triggers").value,
-        food: document.getElementById("food").value
+        food_breakfast: document.getElementById("food_breakfast").value,
+        food_lunch: document.getElementById("food_lunch").value,
+        food_dinner: document.getElementById("food_dinner").value,
+        food_snacks: document.getElementById("food_snacks").value
       };
     }
 
@@ -182,11 +202,11 @@
 
     function downloadCSV() {
       if (!lastEntry) return;
-      let csv = "Date,Severity,Medication Prevention,Medication SOS,Relief,Menstruation,Aura,Symptoms,Side,Pain Type,Triggers,Food\n";
       const e = lastEntry;
-      csv += `${e.date},${e.severity},"${e.medication_prevention}","${e.medication_sos}",${e.relief},${e.menstruation},${e.aura},"${e.symptoms}",${e.side},${e.pain_type},"${e.triggers}","${e.food}"\n`;
+      let csv = "Date,Severity,Med Prevention,Med SOS,Relief,Menstruation,Aura,Nausea,Vomiting,Photophobia,Phonophobia,Osmophobia,Movement,Side,Pain Type,Triggers,Breakfast,Lunch,Dinner,Snacks\n";
+      csv += `"${e.date}",${e.severity},"${e.medication_prevention}","${e.medication_sos}",${e.relief},${e.menstruation},${e.aura},${e.symptom_nausea},${e.symptom_vomiting},${e.symptom_photophobia},${e.symptom_phonophobia},${e.symptom_osmophobia},${e.symptom_movement},${e.side},${e.pain_type},"${e.triggers}","${e.food_breakfast}","${e.food_lunch}","${e.food_dinner}","${e.food_snacks}"\n`;
 
-      const blob = new Blob([csv], { type: 'text/csv' });
+      const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
