@@ -190,30 +190,20 @@
     }
 
     async function sendEntry(entry) {
-      const tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: "870584313285-haudbdloluuq86o9aes5h222nepfh8d0.apps.googleusercontent.com", // <-- replace with your actual OAuth client ID
-        scope: "https://www.googleapis.com/auth/script.external_request",
-        callback: (tokenResponse) => {
-          fetch("https://script.google.com/macros/s/AKfycbwLRT25ySXoBIS0tGeK1-oh0dVOB27qo_XcrRFSJVV0-W2ghVBAnP3iAnjX3ko8BXFOyg/exec", {
-            method: "POST",
-            headers: {
-              "Authorization": "Bearer " + tokenResponse.access_token,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(entry)
-          })
-          .then(res => res.text())
-          .then(msg => {
-            alert("Entry sent to Google Sheets: " + msg);
-            document.getElementById("downloadDiv").style.display = "block";
-            clearForm();
-          })
-          .catch(err => alert("Error: " + err));
-        },
-      });
-      tokenClient.requestAccessToken();
+      fetch("https://script.google.com/macros/s/AKfycbwLRT25ySXoBIS0tGeK1-oh0dVOB27qo_XcrRFSJVV0-W2ghVBAnP3iAnjX3ko8BXFOyg/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(entry)
+      })
+      .then(res => res.text())
+      .then(msg => {
+        alert("Entry sent to Google Sheets: " + msg);
+        document.getElementById("downloadDiv").style.display = "block";
+        clearForm();
+      })
+      .catch(err => alert("Error: " + err));
     }
-
+    
     function downloadCSV() {
       if (!lastEntry) return;
       const e = lastEntry;
