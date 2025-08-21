@@ -1,250 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Migraine Tracker</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background-color: #cdd7d6; /* page background */
-    color: #102542; /* text color */}
-    h1 { text-align: center; }
-    .page { display: none; max-width: 500px; margin: auto; }
-    .active { display: block; }
-    label { font-weight: bold; display: block; margin-top: 10px; }
-    input, select, textarea, button { width: 100%; padding: 8px; margin-top: 4px; border-radius: 5px; border: 1px solid #ccc; }
-    button { background-color: #f87060; color: white; cursor: pointer; margin-top: 15px; }
-    button:hover { background-color: #c2564a; }
-    .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
-    #login-section { text-align: center; margin-bottom: 20px; }
-    #warning { color: red; font-weight: bold; text-align: center; margin: 10px 0; }
-    .checkbox-group label { font-weight: normal; display: block; }
-  </style>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Migraine Tracker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #cdd7d6;
+    color: #102542;
+  }
+  h1 { text-align: center; }
+  .page { display: none; max-width: 600px; margin: auto; }
+  .active { display: block; }
+  label { font-weight: bold; display: block; margin-top: 10px; }
+  input, select, textarea, button { width: 100%; padding: 8px; margin-top: 4px; border-radius: 5px; border: 1px solid #ccc; }
+  button {
+    background-color: #f87060;
+    color: white;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  button:hover { background-color: #c2564a; }
+  button:active { background-color: #c2564a; }
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+  #login-section { text-align: center; margin-bottom: 20px; }
+  #warning { color: red; font-weight: bold; text-align: center; margin: 10px 0; }
+
+  /* Checkbox alignment */
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+  }
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: normal;
+  }
+</style>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <h1>Migraine Tracker</h1>
+<h1>Migraine Tracker</h1>
 
-  <div id="login-section">
-    <div id="g_id_onload"
-         data-client_id="870584313285-haudbdloluuq86o9aes5h222nepfh8d0.apps.googleusercontent.com"
-         data-context="signin"
-         data-ux_mode="popup"
-         data-callback="onSignIn"
-         data-auto_select="false"
-         data-itp_support="true">
+<div id="login-section">
+  <div id="g_id_onload"
+       data-client_id="YOUR_CLIENT_ID"
+       data-context="signin"
+       data-ux_mode="popup"
+       data-callback="onSignIn"
+       data-auto_select="false"
+       data-itp_support="true">
+  </div>
+  <div class="g_id_signin" data-type="standard"></div>
+</div>
+
+<div id="warning"></div>
+
+<form id="trackerForm">
+  <!-- Page 1 -->
+  <div class="page active" id="page1">
+    <label>Date:</label>
+    <input type="date" id="date" readonly>
+
+    <label>Intensity (1–10):</label>
+    <input type="number" id="severity" min="1" max="10" required>
+
+    <label>Medication (Prevention):</label>
+    <input type="text" id="medication_prevention">
+
+    <label>Medication (SOS):</label>
+    <input type="text" id="medication_sos">
+
+    <label>Significant relief after 2h:</label>
+    <select id="relief">
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <div class="nav-buttons">
+      <span></span>
+      <button type="button" onclick="nextPage(2)">Next</button>
     </div>
-    <div class="g_id_signin" data-type="standard"></div>
   </div>
 
-  <div id="warning"></div>
+  <!-- Page 2 -->
+  <div class="page" id="page2">
+    <label>Menstruation:</label>
+    <select id="menstruation">
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
 
-  <form id="trackerForm">
-    <!-- Page 1 -->
-    <div class="page active" id="page1">
-      <label>Date:</label>
-      <input type="date" id="date" readonly>
-      <label>Intensity (1–10):</label>
-      <input type="number" id="severity" min="1" max="10" required>
-      <label>Medication (Prevention):</label>
-      <input type="text" id="medication_prevention">
-      <label>Medication (SOS):</label>
-      <input type="text" id="medication_sos">
-      <label>Significant relief after 2h:</label>
-      <select id="relief">
-        <option value="">Select</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-      <div class="nav-buttons">
-        <span></span>
-        <button type="button" onclick="nextPage(2)">Next</button>
-      </div>
+    <label>Aura:</label>
+    <select id="aura">
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <div class="nav-buttons">
+      <button type="button" onclick="prevPage(1)">Back</button>
+      <button type="button" onclick="nextPage(3)">Next</button>
     </div>
-
-    <!-- Page 2 -->
-    <div class="page" id="page2">
-      <label>Menstruation:</label>
-      <select id="menstruation">
-        <option value="">Select</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-      <label>Aura:</label>
-      <select id="aura">
-        <option value="">Select</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-      <div class="nav-buttons">
-        <button type="button" onclick="prevPage(1)">Back</button>
-        <button type="button" onclick="nextPage(3)">Next</button>
-      </div>
-    </div>
-
-    <!-- Page 3 -->
-    <div class="page" id="page3">
-      <label>Symptoms:</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" class="symptom" value="Nausea"> Nausea</label>
-        <label><input type="checkbox" class="symptom" value="Vomiting"> Vomiting</label>
-        <label><input type="checkbox" class="symptom" value="Photophobia"> Photophobia</label>
-        <label><input type="checkbox" class="symptom" value="Phonophobia"> Phonophobia</label>
-        <label><input type="checkbox" class="symptom" value="Osmophobia"> Osmophobia</label>
-        <label><input type="checkbox" class="symptom" value="Worsening with movement"> Worsening with movement</label>
-      </div>
-
-      <label>Pain side:</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" class="pain_side" value="Right"> Right</label>
-        <label><input type="checkbox" class="pain_side" value="Left"> Left</label>
-        <label><input type="checkbox" class="pain_side" value="Whole head"> Whole head</label>
-        <label><input type="checkbox" class="pain_side" value="Frontal"> Frontal</label>
-      </div>
-
-      <label>Pain type:</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" class="pain_type" value="Throbbing"> Throbbing</label>
-        <label><input type="checkbox" class="pain_type" value="Pressure"> Pressure</label>
-        <label><input type="checkbox" class="pain_type" value="Weight"> Weight</label>
-        <label>
-          <input type="checkbox" class="pain_type" value="Other" id="pain_type_other_cb"> Other
-        </label>
-        <input type="text" id="pain_type_other_text" placeholder="Specify other" style="display:none; margin-top:5px;">
-      </div>
-
-      <div class="nav-buttons">
-        <button type="button" onclick="prevPage(2)">Back</button>
-        <button type="button" onclick="nextPage(4)">Next</button>
-      </div>
-    </div>
-
-    <!-- Page 4 -->
-    <div class="page" id="page4">
-      <label>Possible triggers:</label>
-      <textarea id="triggers"></textarea>
-      <label>Food – Breakfast:</label>
-      <input type="text" id="food_breakfast">
-      <label>Food – Lunch:</label>
-      <input type="text" id="food_lunch">
-      <label>Food – Dinner:</label>
-      <input type="text" id="food_dinner">
-      <label>Food – Snacks:</label>
-      <input type="text" id="food_snacks">
-
-      <div class="nav-buttons">
-        <button type="button" onclick="prevPage(3)">Back</button>
-        <button type="submit">Submit</button>
-      </div>
-    </div>
-  </form>
-
-  <div style="text-align:center; margin-top:20px;">
-    <button onclick="downloadCSV()">Download CSV</button>
   </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxES9alWN3BVA1nfE8Zwos5dbOsunbad4_CqgAkBVLVU49HlGyAjrj6rX89h7lBC8dg7A/exec";
-    let googleUser = null;
-    let entries = JSON.parse(localStorage.getItem("headacheEntries")) || [];
-    let startDate = localStorage.getItem("trackingStartDate");
+  <!-- Page 3 -->
+  <div class="page" id="page3">
+    <label>Symptoms:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="symptoms" value="Nausea"> Nausea</label>
+      <label><input type="checkbox" name="symptoms" value="Vomiting"> Vomiting</label>
+      <label><input type="checkbox" name="symptoms" value="Photophobia"> Photophobia (light)</label>
+      <label><input type="checkbox" name="symptoms" value="Phonophobia"> Phonophobia (sound)</label>
+      <label><input type="checkbox" name="symptoms" value="Osmophobia"> Osmophobia (smells)</label>
+      <label><input type="checkbox" name="symptoms" value="Movement"> Worsening with movement</label>
+    </div>
 
-    function onSignIn(response) {
-      const payload = JSON.parse(atob(response.credential.split('.')[1]));
-      if (payload.email !== "lydiafneto@gmail.com") {
-        alert("Unauthorized user");
-        return;
-      }
-      googleUser = payload;
-      document.getElementById("login-section").innerHTML = `<p>Signed in as ${googleUser.email}</p>`;
+    <label>Pain side:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="pain_side" value="Right"> Right</label>
+      <label><input type="checkbox" name="pain_side" value="Left"> Left</label>
+      <label><input type="checkbox" name="pain_side" value="Whole head"> Whole head</label>
+      <label><input type="checkbox" name="pain_side" value="Frontal"> Frontal</label>
+    </div>
+
+    <label>Pain type:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="pain_type" value="Throbbing"> Throbbing</label>
+      <label><input type="checkbox" name="pain_type" value="Pressure"> Pressure</label>
+      <label><input type="checkbox" name="pain_type" value="Weight"> Weight</label>
+      <label><input type="checkbox" name="pain_type" value="Other"> Other</label>
+    </div>
+
+    <div class="nav-buttons">
+      <button type="button" onclick="prevPage(2)">Back</button>
+      <button type="button" onclick="nextPage(4)">Next</button>
+    </div>
+  </div>
+
+  <!-- Page 4 -->
+  <div class="page" id="page4">
+    <label>Possible triggers:</label>
+    <textarea id="triggers"></textarea>
+
+    <label>Food – Breakfast:</label>
+    <input type="text" id="food_breakfast">
+    <label>Food – Lunch:</label>
+    <input type="text" id="food_lunch">
+    <label>Food – Dinner:</label>
+    <input type="text" id="food_dinner">
+    <label>Food – Snacks:</label>
+    <input type="text" id="food_snacks">
+
+    <div class="nav-buttons">
+      <button type="button" onclick="prevPage(3)">Back</button>
+      <button type="submit">Submit</button>
+    </div>
+  </div>
+</form>
+
+<div style="text-align:center; margin-top:20px;">
+  <button onclick="downloadCSV()">Download CSV</button>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // replace
+
+let googleUser = null;
+let entries = JSON.parse(localStorage.getItem("headacheEntries")) || [];
+let startDate = localStorage.getItem("trackingStartDate");
+
+// Google Sign-In callback
+function onSignIn(response) {
+  const payload = JSON.parse(atob(response.credential.split('.')[1]));
+  if (payload.email !== "YOUR_EMAIL@gmail.com") {
+    alert("Unauthorized user");
+    return;
+  }
+  googleUser = payload;
+  document.getElementById("login-section").innerHTML =
+    `<p>Signed in as ${googleUser.email}</p>`;
+}
+
+// Page navigation
+function showPage(n) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page" + n).classList.add("active");
+}
+function nextPage(n) { showPage(n); }
+function prevPage(n) { showPage(n); }
+
+// Date autofill & missing-day warning
+document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("date").value = today;
+
+  if (!startDate) {
+    localStorage.setItem("trackingStartDate", today);
+    startDate = today;
+  } else {
+    const diffDays = (new Date(today) - new Date(startDate)) / (1000*60*60*24);
+    if (diffDays > entries.length) {
+      document.getElementById("warning").textContent =
+        "⚠ You missed some previous days!";
     }
+  }
+});
 
-    function showPage(n) {
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-      document.getElementById("page" + n).classList.add("active");
-    }
-    function nextPage(n) { showPage(n); }
-    function prevPage(n) { showPage(n); }
+// Form submission
+document.getElementById("trackerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("date").value = today;
-      if (!startDate) localStorage.setItem("trackingStartDate", today);
+  const formData = {
+    date: document.getElementById("date").value,
+    severity: document.getElementById("severity").value,
+    medication_prevention: document.getElementById("medication_prevention").value,
+    medication_sos: document.getElementById("medication_sos").value,
+    relief: document.getElementById("relief").value,
+    menstruation: document.getElementById("menstruation").value,
+    aura: document.getElementById("aura").value,
+    symptoms: Array.from(document.querySelectorAll("input[name='symptoms']:checked")).map(cb=>cb.value),
+    pain_side: Array.from(document.querySelectorAll("input[name='pain_side']:checked")).map(cb=>cb.value),
+    pain_type: Array.from(document.querySelectorAll("input[name='pain_type']:checked")).map(cb=>cb.value),
+    triggers: document.getElementById("triggers").value,
+    food_breakfast: document.getElementById("food_breakfast").value,
+    food_lunch: document.getElementById("food_lunch").value,
+    food_dinner: document.getElementById("food_dinner").value,
+    food_snacks: document.getElementById("food_snacks").value
+  };
 
-      if (entries.length > 0) {
-        const lastDate = entries[entries.length - 1].date;
-        const diff = Math.floor((new Date(today) - new Date(lastDate)) / (1000*60*60*24));
-        if (diff > 1) document.getElementById("warning").innerText = `⚠️ You missed ${diff-1} day(s) since ${lastDate}.`;
-      }
+  entries.push(formData);
+  localStorage.setItem("headacheEntries", JSON.stringify(entries));
 
-      // "Other" text input for pain type
-      const otherCb = document.getElementById("pain_type_other_cb");
-      const otherText = document.getElementById("pain_type_other_text");
-      otherCb.addEventListener("change", () => {
-        otherText.style.display = otherCb.checked ? "block" : "none";
-      });
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+      credentials: "include"
     });
+    const text = await res.text();
+    alert("Saved! " + text);
+  } catch (err) {
+    alert("Error sending to Google Sheets: " + err);
+  }
 
-    function getCheckedValues(className) {
-      return Array.from(document.querySelectorAll("." + className + ":checked")).map(cb => cb.value);
-    }
+  document.getElementById("trackerForm").reset();
+  showPage(1);
+});
 
-    document.getElementById("trackerForm").addEventListener("submit", async function(event) {
-      event.preventDefault();
-      if (!googleUser) { alert("Please sign in first."); return; }
-
-      const entry = {
-        date: document.getElementById("date").value,
-        severity: document.getElementById("severity").value,
-        medication_prevention: document.getElementById("medication_prevention").value,
-        medication_sos: document.getElementById("medication_sos").value,
-        relief: document.getElementById("relief").value,
-        menstruation: document.getElementById("menstruation").value,
-        aura: document.getElementById("aura").value,
-        symptom: getCheckedValues("symptom").join(", "),
-        pain_side: getCheckedValues("pain_side").join(", "),
-        pain_type: (() => {
-          let types = getCheckedValues("pain_type");
-          if (types.includes("Other") && document.getElementById("pain_type_other_text").value.trim()) {
-            types[types.indexOf("Other")] = "Other: " + document.getElementById("pain_type_other_text").value.trim();
-          }
-          return types.join(", ");
-        })(),
-        triggers: document.getElementById("triggers").value,
-        food_breakfast: document.getElementById("food_breakfast").value,
-        food_lunch: document.getElementById("food_lunch").value,
-        food_dinner: document.getElementById("food_dinner").value,
-        food_snacks: document.getElementById("food_snacks").value
-      };
-
-      entries.push(entry);
-      localStorage.setItem("headacheEntries", JSON.stringify(entries));
-
-      try {
-        await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify(entry) });
-        alert("Entry submitted successfully!");
-        this.reset();
-        showPage(1);
-        document.getElementById("date").value = new Date().toISOString().split("T")[0];
-      } catch (error) {
-        alert("Error sending to Google Sheets: " + error);
-      }
-    });
-
-    function downloadCSV() {
-      if (entries.length === 0) { alert("No entries."); return; }
-      const keys = Object.keys(entries[0]);
-      const csv = [
-        keys.join(","),
-        ...entries.map(e => keys.map(k => `"${(e[k]||"").replace(/"/g,'""')}"`).join(","))
-      ].join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "headache_entries.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-  </script>
+// CSV download
+function downloadCSV() {
+  if (entries.length === 0) { alert("No entries to download."); return; }
+  const header = Object.keys(entries[0]);
+  const csvRows = [
+    header.join(","),
+    ...entries.map(e => header.map(h => `"${e[h]}"`).join(","))
+  ];
+  const csv = csvRows.join("\n");
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "migraine_entries.csv";
+  a.click();
+}
+</script>
 </body>
 </html>
