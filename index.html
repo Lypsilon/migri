@@ -6,183 +6,109 @@
 <title>Migraine Tracker</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
     background-color: #cdd7d6;
     color: #102542;
+    font-family: Arial, sans-serif;
+    padding: 20px;
   }
-  h1 { text-align: center; }
-  .page { display: none; max-width: 600px; margin: auto; }
-  .active { display: block; }
-  label { font-weight: bold; display: block; margin-top: 10px; }
-  input, select, textarea, button { width: 100%; padding: 8px; margin-top: 4px; border-radius: 5px; border: 1px solid #ccc; }
+  label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  input[type="checkbox"], input[type="radio"] {
+    margin-right: 8px;
+  }
   button {
     background-color: #f87060;
     color: white;
+    border: none;
+    padding: 10px 20px;
     cursor: pointer;
-    margin-top: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
   }
-  button:hover { background-color: #c2564a; }
-  button:active { background-color: #c2564a; }
-  .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
-  #login-section { text-align: center; margin-bottom: 20px; }
-  #warning { color: red; font-weight: bold; text-align: center; margin: 10px 0; }
-
-  /* Checkbox alignment */
-  .checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 5px;
+  button:active {
+    background-color: #c2564a;
   }
-  .checkbox-group label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: normal;
+  .section {
+    margin-bottom: 20px;
   }
 </style>
-
-<!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
 <h1>Migraine Tracker</h1>
 
 <div id="login-section">
   <div id="g_id_onload"
        data-client_id="870584313285-haudbdloluuq86o9aes5h222nepfh8d0.apps.googleusercontent.com"
-       data-context="signin"
-       data-ux_mode="popup"
-       data-callback="onSignIn"
-       data-auto_select="false"
-       data-itp_support="true">
+       data-callback="onSignIn">
   </div>
   <div class="g_id_signin" data-type="standard"></div>
 </div>
 
-<div id="warning"></div>
-
 <form id="trackerForm">
-  <!-- Page 1 -->
-  <div class="page active" id="page1">
-    <label>Date:</label>
-    <input type="date" id="date" readonly>
 
-    <label>Intensity (1–10):</label>
-    <input type="number" id="severity" min="1" max="10" required>
-
-    <label>Medication (Prevention):</label>
-    <input type="text" id="medication_prevention">
-
-    <label>Medication (SOS):</label>
-    <input type="text" id="medication_sos">
-
-    <label>Significant relief after 2h:</label>
-    <select id="relief">
-      <option value="">Select</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
-
-    <div class="nav-buttons">
-      <span></span>
-      <button type="button" onclick="nextPage(2)">Next</button>
-    </div>
+  <div class="section">
+    <label>Date: <input type="date" id="date" required></label>
+    <label>Severity (1-10): <input type="number" id="severity" min="1" max="10" required></label>
   </div>
 
-  <!-- Page 2 -->
-  <div class="page" id="page2">
-    <label>Menstruation:</label>
-    <select id="menstruation">
-      <option value="">Select</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
-
-    <label>Aura:</label>
-    <select id="aura">
-      <option value="">Select</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
-
-    <div class="nav-buttons">
-      <button type="button" onclick="prevPage(1)">Back</button>
-      <button type="button" onclick="nextPage(3)">Next</button>
-    </div>
+  <div class="section">
+    <label>Prevention Medication: <input type="text" id="medication_prevention"></label>
+    <label>SOS Medication: <input type="text" id="medication_sos"></label>
+    <label>Relief: <input type="text" id="relief"></label>
+    <label>Menstruation: <input type="text" id="menstruation"></label>
+    <label>Aura: <input type="text" id="aura"></label>
   </div>
 
-  <!-- Page 3 -->
-  <div class="page" id="page3">
-    <label>Symptoms:</label>
-    <div class="checkbox-group">
-      <label><input type="checkbox" name="symptoms" value="Nausea"> Nausea</label>
-      <label><input type="checkbox" name="symptoms" value="Vomiting"> Vomiting</label>
-      <label><input type="checkbox" name="symptoms" value="Photophobia"> Photophobia (light)</label>
-      <label><input type="checkbox" name="symptoms" value="Phonophobia"> Phonophobia (sound)</label>
-      <label><input type="checkbox" name="symptoms" value="Osmophobia"> Osmophobia (smells)</label>
-      <label><input type="checkbox" name="symptoms" value="Movement"> Worsening with movement</label>
-    </div>
-
-    <label>Pain side:</label>
-    <div class="checkbox-group">
-      <label><input type="checkbox" name="pain_side" value="Right"> Right</label>
-      <label><input type="checkbox" name="pain_side" value="Left"> Left</label>
-      <label><input type="checkbox" name="pain_side" value="Whole head"> Whole head</label>
-      <label><input type="checkbox" name="pain_side" value="Frontal"> Frontal</label>
-    </div>
-
-    <label>Pain type:</label>
-    <div class="checkbox-group">
-      <label><input type="checkbox" name="pain_type" value="Throbbing"> Throbbing</label>
-      <label><input type="checkbox" name="pain_type" value="Pressure"> Pressure</label>
-      <label><input type="checkbox" name="pain_type" value="Weight"> Weight</label>
-      <label><input type="checkbox" name="pain_type" value="Other"> Other</label>
-    </div>
-
-    <div class="nav-buttons">
-      <button type="button" onclick="prevPage(2)">Back</button>
-      <button type="button" onclick="nextPage(4)">Next</button>
-    </div>
+  <div class="section">
+    <p>Symptoms:</p>
+    <label><input type="checkbox" id="symptom_nausea">Nausea</label>
+    <label><input type="checkbox" id="symptom_vomiting">Vomiting</label>
+    <label><input type="checkbox" id="symptom_photophobia">Photophobia</label>
+    <label><input type="checkbox" id="symptom_phonophobia">Phonophobia</label>
+    <label><input type="checkbox" id="symptom_osmophobia">Osmophobia</label>
+    <label><input type="checkbox" id="symptom_movement">Movement Sensitivity</label>
   </div>
 
-  <!-- Page 4 -->
-  <div class="page" id="page4">
-    <label>Possible triggers:</label>
-    <textarea id="triggers"></textarea>
-
-    <label>Food – Breakfast:</label>
-    <input type="text" id="food_breakfast">
-    <label>Food – Lunch:</label>
-    <input type="text" id="food_lunch">
-    <label>Food – Dinner:</label>
-    <input type="text" id="food_dinner">
-    <label>Food – Snacks:</label>
-    <input type="text" id="food_snacks">
-
-    <div class="nav-buttons">
-      <button type="button" onclick="prevPage(3)">Back</button>
-      <button type="submit">Submit</button>
-    </div>
+  <div class="section">
+    <p>Pain Side:</p>
+    <label><input type="checkbox" name="pain_side" value="Left">Left</label>
+    <label><input type="checkbox" name="pain_side" value="Right">Right</label>
+    <label><input type="checkbox" name="pain_side" value="Front">Front</label>
+    <label><input type="checkbox" name="pain_side" value="Back">Back</label>
   </div>
+
+  <div class="section">
+    <p>Pain Type:</p>
+    <label><input type="checkbox" name="pain_type" value="Throbbing">Throbbing</label>
+    <label><input type="checkbox" name="pain_type" value="Sharp">Sharp</label>
+    <label><input type="checkbox" name="pain_type" value="Dull">Dull</label>
+    <label><input type="checkbox" name="pain_type" value="Pressure">Pressure</label>
+  </div>
+
+  <div class="section">
+    <label>Triggers: <input type="text" id="triggers"></label>
+    <label>Breakfast: <input type="text" id="food_breakfast"></label>
+    <label>Lunch: <input type="text" id="food_lunch"></label>
+    <label>Dinner: <input type="text" id="food_dinner"></label>
+    <label>Snacks: <input type="text" id="food_snacks"></label>
+  </div>
+
+  <button type="submit">Submit</button>
 </form>
 
-<div style="text-align:center; margin-top:20px;">
-  <button onclick="downloadCSV()">Download CSV</button>
-</div>
-
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSoAC1eBDmefk7UWkLUn2RDRs1zlpZpCj0pMxe9QcSMfZCEwbXVJQPKogmt4VDktAG-A/exec"; // replace
-
 let googleUser = null;
-let entries = JSON.parse(localStorage.getItem("headacheEntries")) || [];
-let startDate = localStorage.getItem("trackingStartDate");
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSoAC1eBDmefk7UWkLUn2RDRs1zlpZpCj0pMxe9QcSMfZCEwbXVJQPKogmt4VDktAG-A/exec"; // Apps Script Web App URL
 
-// Google Sign-In callback
 function onSignIn(response) {
-  const payload = JSON.parse(atob(response.credential.split('.')[1]));
-  if (payload.email !== "YOUR_EMAIL@gmail.com") {
+  const credential = response.credential;
+  const payload = JSON.parse(atob(credential.split('.')[1]));
+  if (payload.email !== "your-email@gmail.com") {
     alert("Unauthorized user");
     return;
   }
@@ -191,36 +117,14 @@ function onSignIn(response) {
     `<p>Signed in as ${googleUser.email}</p>`;
 }
 
-// Page navigation
-function showPage(n) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById("page" + n).classList.add("active");
-}
-function nextPage(n) { showPage(n); }
-function prevPage(n) { showPage(n); }
-
-// Date autofill & missing-day warning
-document.addEventListener("DOMContentLoaded", () => {
-  const today = new Date().toISOString().split("T")[0];
-  document.getElementById("date").value = today;
-
-  if (!startDate) {
-    localStorage.setItem("trackingStartDate", today);
-    startDate = today;
-  } else {
-    const diffDays = (new Date(today) - new Date(startDate)) / (1000*60*60*24);
-    if (diffDays > entries.length) {
-      document.getElementById("warning").textContent =
-        "⚠ You missed some previous days!";
-    }
-  }
-});
-
-// Form submission
-document.getElementById("trackerForm").addEventListener("submit", async (e) => {
+document.getElementById("trackerForm").addEventListener("submit", async function(e) {
   e.preventDefault();
+  if (!googleUser) {
+    alert("Please sign in first.");
+    return;
+  }
 
-  const formData = {
+  const entry = {
     date: document.getElementById("date").value,
     severity: document.getElementById("severity").value,
     medication_prevention: document.getElementById("medication_prevention").value,
@@ -228,9 +132,14 @@ document.getElementById("trackerForm").addEventListener("submit", async (e) => {
     relief: document.getElementById("relief").value,
     menstruation: document.getElementById("menstruation").value,
     aura: document.getElementById("aura").value,
-    symptoms: Array.from(document.querySelectorAll("input[name='symptoms']:checked")).map(cb=>cb.value),
-    pain_side: Array.from(document.querySelectorAll("input[name='pain_side']:checked")).map(cb=>cb.value),
-    pain_type: Array.from(document.querySelectorAll("input[name='pain_type']:checked")).map(cb=>cb.value),
+    symptom_nausea: document.getElementById("symptom_nausea").checked ? "Yes" : "No",
+    symptom_vomiting: document.getElementById("symptom_vomiting").checked ? "Yes" : "No",
+    symptom_photophobia: document.getElementById("symptom_photophobia").checked ? "Yes" : "No",
+    symptom_phonophobia: document.getElementById("symptom_phonophobia").checked ? "Yes" : "No",
+    symptom_osmophobia: document.getElementById("symptom_osmophobia").checked ? "Yes" : "No",
+    symptom_movement: document.getElementById("symptom_movement").checked ? "Yes" : "No",
+    pain_side: Array.from(document.querySelectorAll('input[name="pain_side"]:checked')).map(i => i.value),
+    pain_type: Array.from(document.querySelectorAll('input[name="pain_type"]:checked')).map(i => i.value),
     triggers: document.getElementById("triggers").value,
     food_breakfast: document.getElementById("food_breakfast").value,
     food_lunch: document.getElementById("food_lunch").value,
@@ -238,42 +147,21 @@ document.getElementById("trackerForm").addEventListener("submit", async (e) => {
     food_snacks: document.getElementById("food_snacks").value
   };
 
-  entries.push(formData);
-  localStorage.setItem("headacheEntries", JSON.stringify(entries));
-
   try {
-    const res = await fetch(SCRIPT_URL, {
+    const idToken = googleUser.sub;
+    const res = await fetch(SCRIPT_URL + "?idToken=" + idToken, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(entry),
       credentials: "include"
     });
     const text = await res.text();
-    alert("Saved! " + text);
+    alert("Entry saved! Response: " + text);
   } catch (err) {
     alert("Error sending to Google Sheets: " + err);
   }
-
-  document.getElementById("trackerForm").reset();
-  showPage(1);
 });
-
-// CSV download
-function downloadCSV() {
-  if (entries.length === 0) { alert("No entries to download."); return; }
-  const header = Object.keys(entries[0]);
-  const csvRows = [
-    header.join(","),
-    ...entries.map(e => header.map(h => `"${e[h]}"`).join(","))
-  ];
-  const csv = csvRows.join("\n");
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = "migraine_entries.csv";
-  a.click();
-}
 </script>
+
 </body>
 </html>
