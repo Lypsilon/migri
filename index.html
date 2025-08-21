@@ -5,28 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Migraine Tracker</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #cdd7d6; /* page background */
+    color: #102542; /* text color */}
     h1 { text-align: center; }
     .page { display: none; max-width: 500px; margin: auto; }
     .active { display: block; }
     label { font-weight: bold; display: block; margin-top: 10px; }
     input, select, textarea, button { width: 100%; padding: 8px; margin-top: 4px; border-radius: 5px; border: 1px solid #ccc; }
-    button { background-color: #4CAF50; color: white; cursor: pointer; margin-top: 15px; }
-    button:hover { background-color: #45a049; }
+    button { background-color: #f87060; color: white; cursor: pointer; margin-top: 15px; }
+    button:hover { background-color: #c2564a; }
     .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
     #login-section { text-align: center; margin-bottom: 20px; }
     #warning { color: red; font-weight: bold; text-align: center; margin: 10px 0; }
+    .checkbox-group label { font-weight: normal; display: block; }
   </style>
-  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <h1>Migraine Tracker</h1>
 
-  <!-- LOGIN -->
   <div id="login-section">
     <div id="g_id_onload"
-         data-client_id="870584313285-haudbdloluuq86o9aes5h222nepfh8d0.apps.googleusercontent.com"
+         data-client_id="YOUR_CLIENT_ID"
          data-context="signin"
          data-ux_mode="popup"
          data-callback="onSignIn"
@@ -38,36 +38,30 @@
 
   <div id="warning"></div>
 
-  <!-- FORM PAGES -->
   <form id="trackerForm">
-    <!-- Page 1: Intensity + Meds -->
+    <!-- Page 1 -->
     <div class="page active" id="page1">
       <label>Date:</label>
       <input type="date" id="date" readonly>
-
       <label>Intensity (1–10):</label>
       <input type="number" id="severity" min="1" max="10" required>
-
       <label>Medication (Prevention):</label>
       <input type="text" id="medication_prevention">
-
       <label>Medication (SOS):</label>
       <input type="text" id="medication_sos">
-
       <label>Significant relief after 2h:</label>
       <select id="relief">
         <option value="">Select</option>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
       </select>
-
       <div class="nav-buttons">
         <span></span>
         <button type="button" onclick="nextPage(2)">Next</button>
       </div>
     </div>
 
-    <!-- Page 2: Menstruation + Aura -->
+    <!-- Page 2 -->
     <div class="page" id="page2">
       <label>Menstruation:</label>
       <select id="menstruation">
@@ -75,52 +69,48 @@
         <option value="Yes">Yes</option>
         <option value="No">No</option>
       </select>
-
       <label>Aura:</label>
       <select id="aura">
         <option value="">Select</option>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
       </select>
-
       <div class="nav-buttons">
         <button type="button" onclick="prevPage(1)">Back</button>
         <button type="button" onclick="nextPage(3)">Next</button>
       </div>
     </div>
 
-    <!-- Page 3: Symptoms -->
+    <!-- Page 3 -->
     <div class="page" id="page3">
-      <label>Nausea:</label>
-      <select id="symptom_nausea"><option>No</option><option>Yes</option></select>
-      <label>Vomiting:</label>
-      <select id="symptom_vomiting"><option>No</option><option>Yes</option></select>
-      <label>Photophobia (light):</label>
-      <select id="symptom_photophobia"><option>No</option><option>Yes</option></select>
-      <label>Phonophobia (sound):</label>
-      <select id="symptom_phonophobia"><option>No</option><option>Yes</option></select>
-      <label>Osmophobia (smells):</label>
-      <select id="symptom_osmophobia"><option>No</option><option>Yes</option></select>
-      <label>Worsening with movement:</label>
-      <select id="symptom_movement"><option>No</option><option>Yes</option></select>
+      <label>Symptoms:</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" class="symptom" value="Nausea"> Nausea</label>
+        <label><input type="checkbox" class="symptom" value="Vomiting"> Vomiting</label>
+        <label><input type="checkbox" class="symptom" value="Photophobia"> Photophobia</label>
+        <label><input type="checkbox" class="symptom" value="Phonophobia"> Phonophobia</label>
+        <label><input type="checkbox" class="symptom" value="Osmophobia"> Osmophobia</label>
+        <label><input type="checkbox" class="symptom" value="Worsening with movement"> Worsening with movement</label>
+      </div>
 
       <label>Pain side:</label>
-      <select id="pain_side">
-        <option value="">Select</option>
-        <option>Right</option>
-        <option>Left</option>
-        <option>Whole head</option>
-        <option>Frontal</option>
-      </select>
+      <div class="checkbox-group">
+        <label><input type="checkbox" class="pain_side" value="Right"> Right</label>
+        <label><input type="checkbox" class="pain_side" value="Left"> Left</label>
+        <label><input type="checkbox" class="pain_side" value="Whole head"> Whole head</label>
+        <label><input type="checkbox" class="pain_side" value="Frontal"> Frontal</label>
+      </div>
 
       <label>Pain type:</label>
-      <select id="pain_type">
-        <option value="">Select</option>
-        <option>Throbbing</option>
-        <option>Pressure</option>
-        <option>Weight</option>
-        <option>Other</option>
-      </select>
+      <div class="checkbox-group">
+        <label><input type="checkbox" class="pain_type" value="Throbbing"> Throbbing</label>
+        <label><input type="checkbox" class="pain_type" value="Pressure"> Pressure</label>
+        <label><input type="checkbox" class="pain_type" value="Weight"> Weight</label>
+        <label>
+          <input type="checkbox" class="pain_type" value="Other" id="pain_type_other_cb"> Other
+        </label>
+        <input type="text" id="pain_type_other_text" placeholder="Specify other" style="display:none; margin-top:5px;">
+      </div>
 
       <div class="nav-buttons">
         <button type="button" onclick="prevPage(2)">Back</button>
@@ -128,11 +118,10 @@
       </div>
     </div>
 
-    <!-- Page 4: Triggers & Food -->
+    <!-- Page 4 -->
     <div class="page" id="page4">
       <label>Possible triggers:</label>
       <textarea id="triggers"></textarea>
-
       <label>Food – Breakfast:</label>
       <input type="text" id="food_breakfast">
       <label>Food – Lunch:</label>
@@ -154,26 +143,21 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsLgIwzGzR4duutzVmcq0caOe6dnToN7g6KAi6GHuBm29zj4kjB_oOHE789bHP9MWnNw/exec"; // replace
-
+    const SCRIPT_URL = "YOUR_WEB_APP_URL";
     let googleUser = null;
     let entries = JSON.parse(localStorage.getItem("headacheEntries")) || [];
     let startDate = localStorage.getItem("trackingStartDate");
 
-    // === Google Sign-In callback ===
     function onSignIn(response) {
-      const credential = response.credential;
-      const payload = JSON.parse(atob(credential.split('.')[1]));
+      const payload = JSON.parse(atob(response.credential.split('.')[1]));
       if (payload.email !== "lydiafneto@gmail.com") {
         alert("Unauthorized user");
         return;
       }
       googleUser = payload;
-      document.getElementById("login-section").innerHTML = 
-        `<p>Signed in as ${googleUser.email}</p>`;
+      document.getElementById("login-section").innerHTML = `<p>Signed in as ${googleUser.email}</p>`;
     }
 
-    // === Page navigation ===
     function showPage(n) {
       document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
       document.getElementById("page" + n).classList.add("active");
@@ -181,35 +165,33 @@
     function nextPage(n) { showPage(n); }
     function prevPage(n) { showPage(n); }
 
-    // === Date autofill & missing-day warning ===
     document.addEventListener("DOMContentLoaded", () => {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("date").value = today;
+      if (!startDate) localStorage.setItem("trackingStartDate", today);
 
-      if (!startDate) {
-        localStorage.setItem("trackingStartDate", today);
-        startDate = today;
-      } else {
-        if (entries.length > 0) {
-          const lastDate = entries[entries.length - 1].date;
-          const diff = Math.floor(
-            (new Date(today) - new Date(lastDate)) / (1000*60*60*24)
-          );
-          if (diff > 1) {
-            document.getElementById("warning").innerText =
-              `⚠️ You missed ${diff-1} day(s) since your last entry (${lastDate}).`;
-          }
-        }
+      if (entries.length > 0) {
+        const lastDate = entries[entries.length - 1].date;
+        const diff = Math.floor((new Date(today) - new Date(lastDate)) / (1000*60*60*24));
+        if (diff > 1) document.getElementById("warning").innerText = `⚠️ You missed ${diff-1} day(s) since ${lastDate}.`;
       }
+
+      // "Other" text input for pain type
+      const otherCb = document.getElementById("pain_type_other_cb");
+      const otherText = document.getElementById("pain_type_other_text");
+      otherCb.addEventListener("change", () => {
+        otherText.style.display = otherCb.checked ? "block" : "none";
+      });
     });
 
-    // === Form submit ===
+    function getCheckedValues(className) {
+      return Array.from(document.querySelectorAll("." + className + ":checked")).map(cb => cb.value);
+    }
+
     document.getElementById("trackerForm").addEventListener("submit", async function(event) {
       event.preventDefault();
-      if (!googleUser) {
-        alert("Please sign in first.");
-        return;
-      }
+      if (!googleUser) { alert("Please sign in first."); return; }
+
       const entry = {
         date: document.getElementById("date").value,
         severity: document.getElementById("severity").value,
@@ -218,14 +200,15 @@
         relief: document.getElementById("relief").value,
         menstruation: document.getElementById("menstruation").value,
         aura: document.getElementById("aura").value,
-        symptom_nausea: document.getElementById("symptom_nausea").value,
-        symptom_vomiting: document.getElementById("symptom_vomiting").value,
-        symptom_photophobia: document.getElementById("symptom_photophobia").value,
-        symptom_phonophobia: document.getElementById("symptom_phonophobia").value,
-        symptom_osmophobia: document.getElementById("symptom_osmophobia").value,
-        symptom_movement: document.getElementById("symptom_movement").value,
-        pain_side: document.getElementById("pain_side").value,
-        pain_type: document.getElementById("pain_type").value,
+        symptom: getCheckedValues("symptom").join(", "),
+        pain_side: getCheckedValues("pain_side").join(", "),
+        pain_type: (() => {
+          let types = getCheckedValues("pain_type");
+          if (types.includes("Other") && document.getElementById("pain_type_other_text").value.trim()) {
+            types[types.indexOf("Other")] = "Other: " + document.getElementById("pain_type_other_text").value.trim();
+          }
+          return types.join(", ");
+        })(),
         triggers: document.getElementById("triggers").value,
         food_breakfast: document.getElementById("food_breakfast").value,
         food_lunch: document.getElementById("food_lunch").value,
@@ -237,40 +220,30 @@
       localStorage.setItem("headacheEntries", JSON.stringify(entries));
 
       try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(entry),
-          credentials: "include"
-        });
-        const text = await res.text();
-        alert("Entry saved! Response: " + text);
-        document.getElementById("trackerForm").reset();
+        await fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify(entry) });
+        alert("Entry submitted successfully!");
+        this.reset();
         showPage(1);
         document.getElementById("date").value = new Date().toISOString().split("T")[0];
-      } catch (err) {
-        alert("Error saving entry: " + err);
+      } catch (error) {
+        alert("Error sending to Google Sheets: " + error);
       }
     });
 
-    // === CSV download ===
     function downloadCSV() {
-      if (entries.length === 0) {
-        alert("No entries to download.");
-        return;
-      }
-      let csv = "Date,Severity,Prevention,SOS,Relief,Menstruation,Aura,Nausea,Vomiting,Photophobia,Phonophobia,Osmophobia,Movement,PainSide,PainType,Triggers,Breakfast,Lunch,Dinner,Snacks\n";
-      entries.forEach(e => {
-        csv += `${e.date},${e.severity},${e.medication_prevention},${e.medication_sos},${e.relief},${e.menstruation},${e.aura},${e.symptom_nausea},${e.symptom_vomiting},${e.symptom_photophobia},${e.symptom_phonophobia},${e.symptom_osmophobia},${e.symptom_movement},${e.pain_side},${e.pain_type},"${e.triggers}","${e.food_breakfast}","${e.food_lunch}","${e.food_dinner}","${e.food_snacks}"\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
+      if (entries.length === 0) { alert("No entries."); return; }
+      const keys = Object.keys(entries[0]);
+      const csv = [
+        keys.join(","),
+        ...entries.map(e => keys.map(k => `"${(e[k]||"").replace(/"/g,'""')}"`).join(","))
+      ].join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "headache_log.csv";
-      document.body.appendChild(a);
+      a.download = "headache_entries.csv";
       a.click();
-      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   </script>
 </body>
