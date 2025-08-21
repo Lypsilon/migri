@@ -108,10 +108,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxnqSuC3WaPBbW9Ehtgo
 function onSignIn(response) {
   const credential = response.credential;
   const payload = JSON.parse(atob(credential.split('.')[1]));
-  if (payload.email !== "lydiafneto@gmail.com") {
-    alert("Unauthorized user");
-    return;
-  }
   googleUser = payload;
   document.getElementById("login-section").innerHTML =
     `<p>Signed in as ${googleUser.email}</p>`;
