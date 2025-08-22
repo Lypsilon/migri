@@ -1,41 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Migraine Tracker</title>
-<style>
-  body {
-    background-color: #cdd7d6;
-    color: #102542;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-  label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  input[type="checkbox"], input[type="radio"] {
-    margin-right: 8px;
-  }
-  button {
-    background-color: #f87060;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
-  button:active {
-    background-color: #c2564a;
-  }
-  .section {
-    margin-bottom: 20px;
-  }
-</style>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migraine Tracker</title>
+  <style>
+    body { background-color: #cdd7d6; color: #102542; font-family: Arial, sans-serif; padding: 20px; }
+    label { display: flex; align-items: center; margin-bottom: 5px; }
+    input[type="checkbox"], input[type="radio"] { margin-right: 8px; }
+    button { background-color: #f87060; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+    button:active { background-color: #c2564a; }
+    .section { margin-bottom: 20px; }
+  </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -44,13 +21,11 @@
 <div id="login-section">
   <div id="g_id_onload"
        data-client_id="870584313285-haudbdloluuq86o9aes5h222nepfh8d0.apps.googleusercontent.com"
-       data-callback="onSignIn">
-  </div>
+       data-callback="onSignIn"></div>
   <div class="g_id_signin" data-type="standard"></div>
 </div>
 
 <form id="trackerForm">
-
   <div class="section">
     <label>Date: <input type="date" id="date" required></label>
     <label>Severity (1-10): <input type="number" id="severity" min="1" max="10" required></label>
@@ -102,12 +77,14 @@
 </form>
 
 <script>
+let idToken = null;
 let googleUser = null;
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_y-j6B1KFxi4BEshYhlWNdiqBlu5kltYvfbWo9Yr7ahYFXpTXQTH0BUNDdbyMiJN7Jw/exec"; // Apps Script Web App URL
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXX4Ofy59NbdV4wbZeULTrBzocjXdnBUZxKQ3qEpYfoTDK7xlewI6gyZAy3nhVnb8Ogw/exec";
 
 function onSignIn(response) {
-  const credential = response.credential;
-  const payload = JSON.parse(atob(credential.split('.')[1]));
+  idToken = response.credential;   // ✅ real JWT
+  const payload = JSON.parse(atob(idToken.split('.')[1]));
   googleUser = payload;
   document.getElementById("login-section").innerHTML =
     `<p>Signed in as ${googleUser.email}</p>`;
@@ -115,7 +92,7 @@ function onSignIn(response) {
 
 document.getElementById("trackerForm").addEventListener("submit", async function(e) {
   e.preventDefault();
-  if (!googleUser) {
+  if (!idToken) {
     alert("Please sign in first.");
     return;
   }
@@ -144,24 +121,13 @@ document.getElementById("trackerForm").addEventListener("submit", async function
   };
 
   try {
-    let idToken = null;
-
-    function onSignIn(response) {
-      idToken = response.credential; // <-- the full JWT
-      const payload = JSON.parse(atob(idToken.split('.')[1]));
-      googleUser = payload;
-      document.getElementById("login-section").innerHTML =
-        `<p>Signed in as ${googleUser.email}</p>`;
-    }
-
-    const res = await fetch(SCRIPT_URL + "?idToken=" + idToken, {
+    const res = await fetch(SCRIPT_URL + "?idToken=" + encodeURIComponent(idToken), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(entry),
+      body: JSON.stringify(entry)
     });
-
     const text = await res.text();
-    alert("Entry saved! Response: " + text);
+    alert("Response: " + text);
   } catch (err) {
     alert("Error sending to Google Sheets: " + err);
   }
