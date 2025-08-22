@@ -5,137 +5,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Migraine Tracker</title>
   <style>
-    body { background-color: #cdd7d6; color: #102542; font-family: Arial, sans-serif; padding: 20px; }
-    label { display: flex; align-items: center; margin-bottom: 5px; }
-    input[type="checkbox"], input[type="radio"] { margin-right: 8px; }
-    button { background-color: #f87060; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-top: 10px; }
-    button:active { background-color: #c2564a; }
-    .section { margin-bottom: 20px; }
+    body {
+      background-color: #cdd7d6;
+      color: #102542;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    input[type="checkbox"], input[type="radio"] {
+      margin-right: 8px;
+    }
+    button {
+      background-color: #f87060;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    button:active {
+      background-color: #c2564a;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-<h1>Migraine Tracker</h1>
+  <h1>Migraine Tracker</h1>
 
-<div id="login-section">
-  <div id="g_id_onload"
-       data-client_id="870584313285-haudbdloluuq86o9aes5h222nepfh8d0.apps.googleusercontent.com"
-       data-callback="onSignIn"></div>
-  <div class="g_id_signin" data-type="standard"></div>
-</div>
-
-<form id="trackerForm">
-  <div class="section">
-    <label>Date: <input type="date" id="date" required></label>
-    <label>Severity (1-10): <input type="number" id="severity" min="1" max="10" required></label>
+  <!-- Google Sign-in -->
+  <div id="login-section">
+    <div id="g_id_onload"
+        data-client_id="870584313285-haudbdloluuq86o9aes5h222nepfh8d0.apps.googleusercontent.com"
+        data-callback="onSignIn">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
   </div>
 
-  <div class="section">
-    <label>Prevention Medication: <input type="text" id="medication_prevention"></label>
-    <label>SOS Medication: <input type="text" id="medication_sos"></label>
-    <label>Relief: <input type="text" id="relief"></label>
-    <label>Menstruation: <input type="text" id="menstruation"></label>
-    <label>Aura: <input type="text" id="aura"></label>
-  </div>
+  <!-- Migraine form -->
+  <form id="trackerForm">
+    <div class="section">
+      <label>Date: <input type="date" id="date" required></label>
+      <label>Severity (1-10): <input type="number" id="severity" min="1" max="10" required></label>
+    </div>
 
-  <div class="section">
-    <p>Symptoms:</p>
-    <label><input type="checkbox" id="symptom_nausea">Nausea</label>
-    <label><input type="checkbox" id="symptom_vomiting">Vomiting</label>
-    <label><input type="checkbox" id="symptom_photophobia">Photophobia</label>
-    <label><input type="checkbox" id="symptom_phonophobia">Phonophobia</label>
-    <label><input type="checkbox" id="symptom_osmophobia">Osmophobia</label>
-    <label><input type="checkbox" id="symptom_movement">Movement Sensitivity</label>
-  </div>
+    <div class="section">
+      <label>Prevention Medication: <input type="text" id="medication_prevention"></label>
+      <label>SOS Medication: <input type="text" id="medication_sos"></label>
+      <label>Relief: <input type="text" id="relief"></label>
+      <label>Menstruation: <input type="text" id="menstruation"></label>
+      <label>Aura: <input type="text" id="aura"></label>
+    </div>
 
-  <div class="section">
-    <p>Pain Side:</p>
-    <label><input type="checkbox" name="pain_side" value="Left">Left</label>
-    <label><input type="checkbox" name="pain_side" value="Right">Right</label>
-    <label><input type="checkbox" name="pain_side" value="Front">Front</label>
-    <label><input type="checkbox" name="pain_side" value="Back">Back</label>
-  </div>
+    <div class="section">
+      <p>Symptoms:</p>
+      <label><input type="checkbox" id="symptom_nausea">Nausea</label>
+      <label><input type="checkbox" id="symptom_vomiting">Vomiting</label>
+      <label><input type="checkbox" id="symptom_photophobia">Photophobia</label>
+      <label><input type="checkbox" id="symptom_phonophobia">Phonophobia</label>
+      <label><input type="checkbox" id="symptom_osmophobia">Osmophobia</label>
+      <label><input type="checkbox" id="symptom_movement">Movement Sensitivity</label>
+    </div>
 
-  <div class="section">
-    <p>Pain Type:</p>
-    <label><input type="checkbox" name="pain_type" value="Throbbing">Throbbing</label>
-    <label><input type="checkbox" name="pain_type" value="Sharp">Sharp</label>
-    <label><input type="checkbox" name="pain_type" value="Dull">Dull</label>
-    <label><input type="checkbox" name="pain_type" value="Pressure">Pressure</label>
-  </div>
+    <div class="section">
+      <p>Pain Side:</p>
+      <label><input type="checkbox" name="pain_side" value="Left">Left</label>
+      <label><input type="checkbox" name="pain_side" value="Right">Right</label>
+      <label><input type="checkbox" name="pain_side" value="Front">Front</label>
+      <label><input type="checkbox" name="pain_side" value="Back">Back</label>
+    </div>
 
-  <div class="section">
-    <label>Triggers: <input type="text" id="triggers"></label>
-    <label>Breakfast: <input type="text" id="food_breakfast"></label>
-    <label>Lunch: <input type="text" id="food_lunch"></label>
-    <label>Dinner: <input type="text" id="food_dinner"></label>
-    <label>Snacks: <input type="text" id="food_snacks"></label>
-  </div>
+    <div class="section">
+      <p>Pain Type:</p>
+      <label><input type="checkbox" name="pain_type" value="Throbbing">Throbbing</label>
+      <label><input type="checkbox" name="pain_type" value="Sharp">Sharp</label>
+      <label><input type="checkbox" name="pain_type" value="Dull">Dull</label>
+      <label><input type="checkbox" name="pain_type" value="Pressure">Pressure</label>
+    </div>
 
-  <button type="submit">Submit</button>
-</form>
+    <div class="section">
+      <label>Triggers: <input type="text" id="triggers"></label>
+      <label>Breakfast: <input type="text" id="food_breakfast"></label>
+      <label>Lunch: <input type="text" id="food_lunch"></label>
+      <label>Dinner: <input type="text" id="food_dinner"></label>
+      <label>Snacks: <input type="text" id="food_snacks"></label>
+    </div>
 
-<script>
-let idToken = null;
-let googleUser = null;
+    <button type="submit">Submit</button>
+  </form>
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXX4Ofy59NbdV4wbZeULTrBzocjXdnBUZxKQ3qEpYfoTDK7xlewI6gyZAy3nhVnb8Ogw/exec";
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3rJqCJM_WnLPAtxReV0YQxNZr7lIRh50_1TQSp6b1x8SsnodedEh2XCiRAXHCuR8p8w/exec"; // paste Apps Script deployment URL
+    let idToken = null;
 
-function onSignIn(response) {
-  const credential = response.credential;  // this is the ID token
-  window.idToken = credential;             // store globally
-  const payload = JSON.parse(atob(credential.split('.')[1]));
-  googleUser = payload;
-  document.getElementById("login-section").innerHTML =
-    `<p>Signed in as ${googleUser.email}</p>`;
-}
+    // Google Sign-in callback
+    function onSignIn(response) {
+      idToken = response.credential; // full ID token (JWT)
+      const payload = JSON.parse(atob(idToken.split(".")[1]));
+      document.getElementById("login-section").innerHTML =
+        `<p>Signed in as <b>${payload.email}</b></p>`;
+    }
 
+    document.getElementById("trackerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      if (!idToken) {
+        alert("Please sign in first.");
+        return;
+      }
 
-document.getElementById("trackerForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  if (!idToken) {
-    alert("Please sign in first.");
-    return;
-  }
+      const entry = {
+        date: document.getElementById("date").value,
+        severity: document.getElementById("severity").value,
+        medication_prevention: document.getElementById("medication_prevention").value,
+        medication_sos: document.getElementById("medication_sos").value,
+        relief: document.getElementById("relief").value,
+        menstruation: document.getElementById("menstruation").value,
+        aura: document.getElementById("aura").value,
+        symptom_nausea: document.getElementById("symptom_nausea").checked ? "Yes" : "No",
+        symptom_vomiting: document.getElementById("symptom_vomiting").checked ? "Yes" : "No",
+        symptom_photophobia: document.getElementById("symptom_photophobia").checked ? "Yes" : "No",
+        symptom_phonophobia: document.getElementById("symptom_phonophobia").checked ? "Yes" : "No",
+        symptom_osmophobia: document.getElementById("symptom_osmophobia").checked ? "Yes" : "No",
+        symptom_movement: document.getElementById("symptom_movement").checked ? "Yes" : "No",
+        pain_side: Array.from(document.querySelectorAll('input[name="pain_side"]:checked')).map(i => i.value),
+        pain_type: Array.from(document.querySelectorAll('input[name="pain_type"]:checked')).map(i => i.value),
+        triggers: document.getElementById("triggers").value,
+        food_breakfast: document.getElementById("food_breakfast").value,
+        food_lunch: document.getElementById("food_lunch").value,
+        food_dinner: document.getElementById("food_dinner").value,
+        food_snacks: document.getElementById("food_snacks").value
+      };
 
-  const entry = {
-    date: document.getElementById("date").value,
-    severity: document.getElementById("severity").value,
-    medication_prevention: document.getElementById("medication_prevention").value,
-    medication_sos: document.getElementById("medication_sos").value,
-    relief: document.getElementById("relief").value,
-    menstruation: document.getElementById("menstruation").value,
-    aura: document.getElementById("aura").value,
-    symptom_nausea: document.getElementById("symptom_nausea").checked ? "Yes" : "No",
-    symptom_vomiting: document.getElementById("symptom_vomiting").checked ? "Yes" : "No",
-    symptom_photophobia: document.getElementById("symptom_photophobia").checked ? "Yes" : "No",
-    symptom_phonophobia: document.getElementById("symptom_phonophobia").checked ? "Yes" : "No",
-    symptom_osmophobia: document.getElementById("symptom_osmophobia").checked ? "Yes" : "No",
-    symptom_movement: document.getElementById("symptom_movement").checked ? "Yes" : "No",
-    pain_side: Array.from(document.querySelectorAll('input[name="pain_side"]:checked')).map(i => i.value),
-    pain_type: Array.from(document.querySelectorAll('input[name="pain_type"]:checked')).map(i => i.value),
-    triggers: document.getElementById("triggers").value,
-    food_breakfast: document.getElementById("food_breakfast").value,
-    food_lunch: document.getElementById("food_lunch").value,
-    food_dinner: document.getElementById("food_dinner").value,
-    food_snacks: document.getElementById("food_snacks").value
-  };
-
-  try {
-    const res = await fetch(SCRIPT_URL + "?idToken=" + window.idToken, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(entry)
+      try {
+        const res = await fetch(`${SCRIPT_URL}?idToken=${encodeURIComponent(idToken)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(entry)
+        });
+        const text = await res.text();
+        alert("Response: " + text);
+      } catch (err) {
+        alert("Error sending to Google Sheets: " + err);
+      }
     });
-
-    const text = await res.text();
-    alert("Response: " + text);
-  } catch (err) {
-    alert("Error sending to Google Sheets: " + err);
-  }
-});
-</script>
-
+  </script>
 </body>
 </html>
