@@ -1,27 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Migraine Tracker</title>
+<style>
+  body {
+    background-color: #cdd7d6;
+    color: #102542;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  input[type="checkbox"], input[type="radio"] {
+    margin-right: 8px;
+  }
+  button {
+    background-color: #f87060;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  button:active {
+    background-color: #c2564a;
+  }
+  .section {
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Migraine Tracker</h1>
+
+<form id="trackerForm">
+
+  <div class="section">
+    <label>Date: <input type="date" id="date" required></label>
+    <label>Severity (1-10): <input type="number" id="severity" min="1" max="10" required></label>
+  </div>
+
+  <div class="section">
+    <label>Prevention Medication: <input type="text" id="medication_prevention"></label>
+    <label>SOS Medication: <input type="text" id="medication_sos"></label>
+    <label>Relief: <input type="text" id="relief"></label>
+    <label>Menstruation: <input type="text" id="menstruation"></label>
+    <label>Aura: <input type="text" id="aura"></label>
+  </div>
+
+  <div class="section">
+    <p>Symptoms:</p>
+    <label><input type="checkbox" id="symptom_nausea">Nausea</label>
+    <label><input type="checkbox" id="symptom_vomiting">Vomiting</label>
+    <label><input type="checkbox" id="symptom_photophobia">Photophobia</label>
+    <label><input type="checkbox" id="symptom_phonophobia">Phonophobia</label>
+    <label><input type="checkbox" id="symptom_osmophobia">Osmophobia</label>
+    <label><input type="checkbox" id="symptom_movement">Movement Sensitivity</label>
+  </div>
+
+  <div class="section">
+    <p>Pain Side:</p>
+    <label><input type="checkbox" name="pain_side" value="Left">Left</label>
+    <label><input type="checkbox" name="pain_side" value="Right">Right</label>
+    <label><input type="checkbox" name="pain_side" value="Front">Front</label>
+    <label><input type="checkbox" name="pain_side" value="Back">Back</label>
+  </div>
+
+  <div class="section">
+    <p>Pain Type:</p>
+    <label><input type="checkbox" name="pain_type" value="Throbbing">Throbbing</label>
+    <label><input type="checkbox" name="pain_type" value="Sharp">Sharp</label>
+    <label><input type="checkbox" name="pain_type" value="Dull">Dull</label>
+    <label><input type="checkbox" name="pain_type" value="Pressure">Pressure</label>
+  </div>
+
+  <div class="section">
+    <label>Triggers: <input type="text" id="triggers"></label>
+    <label>Breakfast: <input type="text" id="food_breakfast"></label>
+    <label>Lunch: <input type="text" id="food_lunch"></label>
+    <label>Dinner: <input type="text" id="food_dinner"></label>
+    <label>Snacks: <input type="text" id="food_snacks"></label>
+  </div>
+
+  <button type="submit">Submit Entry</button>
+</form>
+
+<script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3rJqCJM_WnLPAtxReV0YQxNZr7lIRh50_1TQSp6b1x8SsnodedEh2XCiRAXHCuR8p8w/exec";
 
-async function sendTestEntry() {
+document.getElementById("trackerForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+
   const entry = {
-    date: "2025-08-22",
-    severity: 5,
-    medication_prevention: "None",
-    medication_sos: "Ibuprofen",
-    relief: "Yes",
-    menstruation: "No",
-    aura: "No",
-    symptom_nausea: "No",
-    symptom_vomiting: "No",
-    symptom_photophobia: "Yes",
-    symptom_phonophobia: "No",
-    symptom_osmophobia: "No",
-    symptom_movement: "Yes",
-    pain_side: ["Left"],
-    pain_type: ["Throbbing"],
-    triggers: "Stress",
-    food_breakfast: "Eggs",
-    food_lunch: "Salad",
-    food_dinner: "Pasta",
-    food_snacks: "Apple"
+    date: document.getElementById("date").value,
+    severity: document.getElementById("severity").value,
+    medication_prevention: document.getElementById("medication_prevention").value,
+    medication_sos: document.getElementById("medication_sos").value,
+    relief: document.getElementById("relief").value,
+    menstruation: document.getElementById("menstruation").value,
+    aura: document.getElementById("aura").value,
+    symptom_nausea: document.getElementById("symptom_nausea").checked ? "Yes" : "No",
+    symptom_vomiting: document.getElementById("symptom_vomiting").checked ? "Yes" : "No",
+    symptom_photophobia: document.getElementById("symptom_photophobia").checked ? "Yes" : "No",
+    symptom_phonophobia: document.getElementById("symptom_phonophobia").checked ? "Yes" : "No",
+    symptom_osmophobia: document.getElementById("symptom_osmophobia").checked ? "Yes" : "No",
+    symptom_movement: document.getElementById("symptom_movement").checked ? "Yes" : "No",
+    pain_side: Array.from(document.querySelectorAll('input[name="pain_side"]:checked')).map(i=>i.value),
+    pain_type: Array.from(document.querySelectorAll('input[name="pain_type"]:checked')).map(i=>i.value),
+    triggers: document.getElementById("triggers").value,
+    food_breakfast: document.getElementById("food_breakfast").value,
+    food_lunch: document.getElementById("food_lunch").value,
+    food_dinner: document.getElementById("food_dinner").value,
+    food_snacks: document.getElementById("food_snacks").value
   };
 
   try {
@@ -31,8 +128,16 @@ async function sendTestEntry() {
       body: JSON.stringify(entry)
     });
     const text = await res.text();
-    alert("Response: " + text);
-  } catch (err) {
-    alert("Error: " + err);
+    alert("Entry saved! Response: " + text);
+
+    // Clear form
+    document.getElementById("trackerForm").reset();
+
+  } catch(err){
+    alert("Error sending to Google Sheets: " + err);
   }
-}
+});
+</script>
+
+</body>
+</html>
