@@ -103,7 +103,7 @@
 
 <script>
 let googleUser = null;
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwilKeYHF6UWZcHf0jq1GWO110tnKBhsZW6T6HDxjlLBVmTK3I0iAgoX1GCnM0Sb1fFlA/exec"; // Apps Script Web App URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_y-j6B1KFxi4BEshYhlWNdiqBlu5kltYvfbWo9Yr7ahYFXpTXQTH0BUNDdbyMiJN7Jw/exec"; // Apps Script Web App URL
 
 function onSignIn(response) {
   const credential = response.credential;
@@ -144,13 +144,22 @@ document.getElementById("trackerForm").addEventListener("submit", async function
   };
 
   try {
-    const idToken = googleUser.sub;
+    let idToken = null;
+
+    function onSignIn(response) {
+      idToken = response.credential; // <-- the full JWT
+      const payload = JSON.parse(atob(idToken.split('.')[1]));
+      googleUser = payload;
+      document.getElementById("login-section").innerHTML =
+        `<p>Signed in as ${googleUser.email}</p>`;
+    }
+
     const res = await fetch(SCRIPT_URL + "?idToken=" + idToken, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry),
-      credentials: "include"
     });
+
     const text = await res.text();
     alert("Entry saved! Response: " + text);
   } catch (err) {
