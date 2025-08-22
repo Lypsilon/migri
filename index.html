@@ -1,0 +1,38 @@
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3rJqCJM_WnLPAtxReV0YQxNZr7lIRh50_1TQSp6b1x8SsnodedEh2XCiRAXHCuR8p8w/exec";
+
+async function sendTestEntry() {
+  const entry = {
+    date: "2025-08-22",
+    severity: 5,
+    medication_prevention: "None",
+    medication_sos: "Ibuprofen",
+    relief: "Yes",
+    menstruation: "No",
+    aura: "No",
+    symptom_nausea: "No",
+    symptom_vomiting: "No",
+    symptom_photophobia: "Yes",
+    symptom_phonophobia: "No",
+    symptom_osmophobia: "No",
+    symptom_movement: "Yes",
+    pain_side: ["Left"],
+    pain_type: ["Throbbing"],
+    triggers: "Stress",
+    food_breakfast: "Eggs",
+    food_lunch: "Salad",
+    food_dinner: "Pasta",
+    food_snacks: "Apple"
+  };
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry)
+    });
+    const text = await res.text();
+    alert("Response: " + text);
+  } catch (err) {
+    alert("Error: " + err);
+  }
+}
