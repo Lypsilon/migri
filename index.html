@@ -83,12 +83,14 @@ let googleUser = null;
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXX4Ofy59NbdV4wbZeULTrBzocjXdnBUZxKQ3qEpYfoTDK7xlewI6gyZAy3nhVnb8Ogw/exec";
 
 function onSignIn(response) {
-  idToken = response.credential;   // ✅ real JWT
-  const payload = JSON.parse(atob(idToken.split('.')[1]));
+  const credential = response.credential;  // this is the ID token
+  window.idToken = credential;             // store globally
+  const payload = JSON.parse(atob(credential.split('.')[1]));
   googleUser = payload;
   document.getElementById("login-section").innerHTML =
     `<p>Signed in as ${googleUser.email}</p>`;
 }
+
 
 document.getElementById("trackerForm").addEventListener("submit", async function(e) {
   e.preventDefault();
@@ -121,11 +123,12 @@ document.getElementById("trackerForm").addEventListener("submit", async function
   };
 
   try {
-    const res = await fetch(SCRIPT_URL + "?idToken=" + encodeURIComponent(idToken), {
+    const res = await fetch(SCRIPT_URL + "?idToken=" + window.idToken, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry)
     });
+
     const text = await res.text();
     alert("Response: " + text);
   } catch (err) {
